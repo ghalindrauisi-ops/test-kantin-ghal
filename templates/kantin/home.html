@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Beranda | Kantin 14 Fakultas UI — By Claudeholic{% endblock %}
+
+{% block content %}
+<!-- ======================================================================
+     HERO SECTION
+     ====================================================================== -->
+<section class="hero">
+  <div class="container">
+    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+      <span class="team-pill team-pill-accent">Tim Claudeholic</span>
+      <span class="team-pill" style="background: white; color: var(--primary); border: 1px solid var(--border-light);">
+        🎓 DDP1 — Sistem Informasi UI
+      </span>
+    </div>
+
+    <h1 class="hero-title">
+      Eksplorasi Kuliner <span>14 Fakultas UI</span>
+    </h1>
+    <p class="hero-desc">
+      Portal terpadu persembahan <strong>Tim Claudeholic</strong> untuk menemukan stan makanan, denah interaktif, dan rekomendasi menu makan siang di seluruh kampus Universitas Indonesia.
+    </p>
+
+    <div class="hero-actions">
+      <a href="{% url 'kantin:randomizer' %}" class="btn btn-accent" style="font-size: 1.05rem; padding: 0.85rem 1.75rem;">
+        <span>🎲</span> Makan apa hari ini?
+      </a>
+      <a href="{% url 'kantin:menu_list' %}" class="btn btn-secondary" style="font-size: 1.05rem; padding: 0.85rem 1.75rem;">
+        <span>🍽️</span> Jelajahi Menu Kantin
+      </a>
+    </div>
+
+    <!-- Quick Stats Bar (Data Aktual Database SQLite) -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num">{{ total_faculty }}</div>
+        <div class="stat-label">Fakultas UI</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">{{ total_booth }}</div>
+        <div class="stat-label">Booth Stan Aktif</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">{{ total_menu }}</div>
+        <div class="stat-label">Pilihan Menu</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================================
+     3 FITUR UTAMA HOMEPAGE (CARDS)
+     ====================================================================== -->
+<section class="features-section" style="padding: 3.5rem 0;">
+  <div class="container">
+    <div class="section-header" style="text-align: center; margin-bottom: 2.75rem;">
+      <span class="team-pill team-pill-accent" style="margin-bottom: 0.5rem;">Fitur Unggulan Claudeholic</span>
+      <h2 style="font-size: 2.25rem; font-weight: 850; color: var(--primary); margin-top: 0.35rem;">
+        Solusi Praktis Kuliner Kampus
+      </h2>
+    </div>
+
+    <div class="features-grid">
+      <!-- 1. Card Mapping Kantin -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          🗺️
+        </div>
+        <h3 class="feature-title">Mapping Denah Kantin</h3>
+        <p class="feature-desc">
+          Eksplorasi tata letak denah stan di 14 fakultas UI. Cari tahu posisi stan favoritmu di Dallas FMIPA, Kansas FIB, Balsem FISIP, atau Kantin Fasilkom secara interaktif.
+        </p>
+        <a href="{% url 'kantin:mapping' %}" class="btn btn-outline btn-block">
+          Buka Denah Pemetaan →
+        </a>
+      </div>
+
+      <!-- 2. Card Randomizer Makanan: "Makan apa hari ini?" -->
+      <div class="feature-card" style="border-color: #fde68a; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.12);">
+        <div class="feature-icon-wrapper">
+          🎲
+        </div>
+        <div style="font-size: 0.75rem; font-weight: 800; color: #b45309; text-transform: uppercase; margin-bottom: 0.25rem;">
+          Fitur Favorit Mahasiswa
+        </div>
+        <h3 class="feature-title" style="color: #92400e;">
+          Makan apa hari ini?
+        </h3>
+        <p class="feature-desc">
+          Generator pintar Python dari <strong>Claudeholic</strong> yang memilihkan menu makan siang secara acak dari 14 Fakultas UI lengkap dengan filter batas budget dompet mahasiswa!
+        </p>
+        <a href="{% url 'kantin:randomizer' %}" class="btn btn-accent btn-block">
+          🎲 Acak Sekarang! →
+        </a>
+      </div>
+
+      <!-- 3. Card Menu Kantin -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          🍜
+        </div>
+        <h3 class="feature-title">Direktori Menu Lengkap</h3>
+        <p class="feature-desc">
+          Daftar seluruh stan kantin dan variasi makanannya di 14 fakultas UI. Dilengkapi pencarian kata kunci, harga terformat rupiah, dan status ketersediaan menu.
+        </p>
+        <a href="{% url 'kantin:menu_list' %}" class="btn btn-outline btn-block">
+          Lihat Seluruh Stan & Menu →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================================
+     SEKSI 14 FAKULTAS UNIVERSITAS INDONESIA
+     ====================================================================== -->
+<section style="padding: 3.5rem 0; background: white; border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <span class="team-pill" style="margin-bottom: 0.5rem;">Jelajahi Berdasarkan Fakultas</span>
+      <h2 style="font-size: 2.2rem; font-weight: 850; color: var(--primary); margin-top: 0.35rem;">
+        14 Fakultas & Kantin Khas di UI
+      </h2>
+      <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.4rem;">
+        Pilih fakultas di bawah ini untuk melihat stan kantin dan variasi menu khasnya:
+      </p>
+    </div>
+
+    <!-- Grid 14 Fakultas -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 1.35rem;">
+      {% for fac in faculties %}
+        <a href="{% url 'kantin:menu_list' %}?faculty={{ fac.short_name }}" 
+           style="background: #f8fafc; border: 1.5px solid var(--border-light); border-radius: var(--radius-md); padding: 1.35rem; transition: var(--transition-fast); display: flex; flex-direction: column;"
+           onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary-light)'; this.style.boxShadow='var(--shadow-md)';"
+           onmouseout="this.style.transform='none'; this.style.borderColor='var(--border-light)'; this.style.boxShadow='none';">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+            <span style="font-size: 2rem;">{{ fac.icon }}</span>
+            <span style="font-size: 0.7rem; font-weight: 800; background: #e0f2fe; color: #0284c7; padding: 0.2rem 0.55rem; border-radius: 999px;">
+              {{ fac.cluster }}
+            </span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 850; color: var(--primary); margin-bottom: 0.25rem;">
+            {{ fac.short_name }}
+          </h3>
+          <div style="font-size: 0.85rem; font-weight: 750; color: var(--accent-dark); margin-bottom: 0.5rem;">
+            🍴 {{ fac.canteen_name }}
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 1rem; flex-grow: 1;">
+            {{ fac.name }}
+          </p>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.775rem; font-weight: 750; color: var(--primary-light); padding-top: 0.75rem; border-top: 1px dashed var(--border-light);">
+            <span>{{ fac.booths.count }} Stan Aktif</span>
+            <span>Buka Menu →</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================================
+     PREVIEW BOOTH TERPOPULER DI UI
+     ====================================================================== -->
+<section style="padding: 3.5rem 0 4.5rem; background: var(--bg-body);">
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.25rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="team-pill team-pill-accent" style="margin-bottom: 0.4rem;">Pilihan Claudeholic</span>
+        <h2 style="font-size: 1.85rem; font-weight: 850; color: var(--primary);">Stan Populer di Berbagai Fakultas UI</h2>
+      </div>
+      <a href="{% url 'kantin:menu_list' %}" style="font-weight: 750; color: var(--primary-light); font-size: 0.95rem;">
+        Lihat Semua Stan ({{ total_booth }}) →
+      </a>
+    </div>
+
+    <div class="booth-grid">
+      {% for booth in featured_booths %}
+        <div class="booth-card">
+          <div class="card-img-placeholder">
+            <span>🏪</span>
+            <span class="card-location-badge">
+              📍 {{ booth.faculty.short_name|default:"UI" }} • {{ booth.location }}
+            </span>
+          </div>
+          <div class="booth-card-body">
+            <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-dark); text-transform: uppercase;">
+              {{ booth.faculty.canteen_name }}
+            </span>
+            <h3 class="booth-card-title">{{ booth.name }}</h3>
+            <p class="booth-card-desc">{{ booth.description|truncatewords:15 }}</p>
+            <div class="booth-card-footer">
+              <span style="font-size: 0.85rem; font-weight: 750; color: var(--primary-light);">
+                🍽️ {{ booth.menus.count }} Menu
+              </span>
+              <a href="{% url 'kantin:booth_detail' booth.id %}" class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem;">
+                Lihat Menu →
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Daftar Stan & Menu 14 Fakultas | Kantin UI{% endblock %}
+
+{% block content %}
+<section style="padding: 2.5rem 0 4rem;">
+  <div class="container">
+    <!-- Header Halaman & Pencarian -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+      <div>
+        <a href="{% url 'kantin:home' %}" style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); font-weight: 600; margin-bottom: 0.75rem; font-size: 0.9rem;">
+          ← Kembali ke Beranda
+        </a>
+        <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--primary-dark);">
+          🍜 Direktori Stan & Menu 14 Fakultas UI
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.25rem;">
+          Pilih stan kantin dari 14 Fakultas Universitas Indonesia untuk melihat seluruh daftar makanan, minuman, dan harga lengkapnya.
+        </p>
+      </div>
+
+      <!-- Form Pencarian Cepat -->
+      <form method="GET" action="{% url 'kantin:menu_list' %}" style="display: flex; gap: 0.5rem; width: 100%; max-width: 420px;">
+        <input type="text" 
+               name="q" 
+               value="{{ query }}" 
+               class="form-input" 
+               placeholder="Cari booth, fakultas, atau makanan..." 
+               style="padding: 0.65rem 1rem;">
+        {% if faculty_code %}
+          <input type="hidden" name="faculty" value="{{ faculty_code }}">
+        {% endif %}
+        {% if category %}
+          <input type="hidden" name="category" value="{{ category }}">
+        {% endif %}
+        <button type="submit" class="btn btn-primary" style="padding: 0.65rem 1.25rem;">
+          Cari
+        </button>
+      </form>
+    </div>
+
+    <!-- Filter 14 Fakultas UI (Scrollable Pills) -->
+    <div style="margin-bottom: 1.25rem;">
+      <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">
+        🏛️ Filter Berdasarkan Fakultas UI:
+      </div>
+      <div style="display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.5rem;">
+        <a href="{% url 'kantin:menu_list' %}{% if category %}?category={{ category }}{% endif %}" 
+           class="btn {% if not faculty_code %}btn-primary{% else %}btn-secondary{% endif %}"
+           style="padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 999px; white-space: nowrap;">
+          Semua (14 Fakultas)
+        </a>
+        {% for fac in faculties %}
+          <a href="{% url 'kantin:menu_list' %}?faculty={{ fac.short_name }}{% if category %}&category={{ category }}{% endif %}{% if query %}&q={{ query }}{% endif %}" 
+             class="btn {% if faculty_code|lower == fac.short_name|lower %}btn-primary{% else %}btn-secondary{% endif %}"
+             style="padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 999px; white-space: nowrap;">
+            {{ fac.icon }} {{ fac.short_name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Filter Kategori Cepat (Pill Buttons) -->
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+      <a href="{% url 'kantin:menu_list' %}{% if faculty_code %}?faculty={{ faculty_code }}{% endif %}" 
+         class="btn {% if not category %}btn-primary{% else %}btn-secondary{% endif %}" 
+         style="padding: 0.4rem 0.9rem; font-size: 0.85rem; border-radius: 999px;">
+        Semua Kategori
+      </a>
+      <a href="{% url 'kantin:menu_list' %}?category=makanan{% if faculty_code %}&faculty={{ faculty_code }}{% endif %}{% if query %}&q={{ query }}{% endif %}" 
+         class="btn {% if category == 'makanan' %}btn-primary{% else %}btn-secondary{% endif %}" 
+         style="padding: 0.4rem 0.9rem; font-size: 0.85rem; border-radius: 999px;">
+        🍛 Makanan
+      </a>
+      <a href="{% url 'kantin:menu_list' %}?category=minuman{% if faculty_code %}&faculty={{ faculty_code }}{% endif %}{% if query %}&q={{ query }}{% endif %}" 
+         class="btn {% if category == 'minuman' %}btn-primary{% else %}btn-secondary{% endif %}" 
+         style="padding: 0.4rem 0.9rem; font-size: 0.85rem; border-radius: 999px;">
+        🥤 Minuman
+      </a>
+      <a href="{% url 'kantin:menu_list' %}?category=snack{% if faculty_code %}&faculty={{ faculty_code }}{% endif %}{% if query %}&q={{ query }}{% endif %}" 
+         class="btn {% if category == 'snack' %}btn-primary{% else %}btn-secondary{% endif %}" 
+         style="padding: 0.4rem 0.9rem; font-size: 0.85rem; border-radius: 999px;">
+        🥨 Snack
+      </a>
+    </div>
+
+    <!-- Menampilkan Status Filter Aktif -->
+    {% if query or category or faculty_code %}
+      <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; background: #eff6ff; padding: 0.75rem 1rem; border-radius: 8px;">
+        <span style="font-size: 0.9rem; color: var(--primary-dark);">
+          Filter aktif:
+          {% if faculty_code %}<strong>Fakultas: {{ faculty_code|upper }}</strong> • {% endif %}
+          {% if category %}<strong>Kategori: {{ category|capfirst }}</strong> • {% endif %}
+          {% if query %}Kata kunci: <strong>"{{ query }}"</strong>{% endif %}
+        </span>
+        <a href="{% url 'kantin:menu_list' %}" style="font-size: 0.85rem; color: var(--danger); font-weight: 700; margin-left: auto;">
+          ✕ Reset Semua Filter
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- Seksi Menu Langsung yang Cocok dengan Pencarian -->
+    {% if matching_menus %}
+      <div style="margin-bottom: 3rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.75rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 1rem;">
+          🍽️ Menu yang Sesuai Pencarian ({{ matching_menus.count }} Ditemukan)
+        </h3>
+        <div class="menu-grid">
+          {% for item in matching_menus %}
+            <div class="menu-card" style="background: white;">
+              <div class="menu-thumb">
+                <span>{% if item.category == 'minuman' %}🥤{% elif item.category == 'snack' %}🥨{% else %}🍛{% endif %}</span>
+              </div>
+              <div class="menu-details">
+                <div style="display: flex; gap: 0.4rem; align-items: center; margin-bottom: 0.2rem;">
+                  <span class="menu-tag">{{ item.get_category_display }}</span>
+                  <span style="font-size: 0.7rem; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 0.1rem 0.4rem; border-radius: 4px;">
+                    {{ item.booth.faculty.short_name|default:"UI" }}
+                  </span>
+                </div>
+                <h4 class="menu-name">{{ item.name }}</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+                  Stan: <a href="{% url 'kantin:booth_detail' item.booth.id %}" style="color: var(--primary); font-weight: 700;">{{ item.booth.name }}</a>
+                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span class="menu-price">{{ item.formatted_price }}</span>
+                  <a href="{% url 'kantin:booth_detail' item.booth.id %}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+                    Buka Stan →
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Grid Daftar Stan Kantin -->
+    <div class="booth-grid">
+      {% for booth in booths %}
+        <div class="booth-card">
+          <div class="card-img-placeholder">
+            <span>🏪</span>
+            <span class="card-location-badge">
+              📍 {{ booth.faculty.short_name|default:"UI" }} • {{ booth.location }}
+            </span>
+          </div>
+
+          <div class="booth-card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <span class="node-code" style="margin-bottom: 0;">{{ booth.map_code }}</span>
+              <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent);">
+                {{ booth.faculty.canteen_name }}
+              </span>
+            </div>
+
+            <h3 class="booth-card-title">{{ booth.name }}</h3>
+            <p class="booth-card-desc">{{ booth.description }}</p>
+
+            <div class="booth-card-footer">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary-light);">
+                🍽️ {{ booth.menus.count }} Menu
+              </span>
+              <a href="{% url 'kantin:booth_detail' booth.id %}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                Buka Menu Booth →
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div style="grid-column: 1 / -1; background: white; border: 1px dashed var(--border-color); border-radius: 12px; text-align: center; padding: 4rem 1.5rem;">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔍</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+            Tidak Ada Stan yang Cocok
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            Tidak ada stan kantin yang cocok dengan kriteria filter Anda.
+          </p>
+          <a href="{% url 'kantin:menu_list' %}" class="btn btn-secondary">
+            Reset Semua Filter
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

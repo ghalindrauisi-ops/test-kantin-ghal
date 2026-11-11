@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ booth.name }} | Kantin Fasilkom UI{% endblock %}
+
+{% block content %}
+<section style="padding: 2.5rem 0 4rem;">
+  <div class="container">
+    <!-- Breadcrumb Navigasi -->
+    <div style="margin-bottom: 1.5rem;">
+      <a href="{% url 'kantin:menu_list' %}" style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); font-weight: 600; font-size: 0.9rem;">
+        ← Kembali ke Daftar Seluruh Booth
+      </a>
+    </div>
+
+    <!-- Banner Profil Booth -->
+    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.25rem; box-shadow: var(--shadow-sm); margin-bottom: 2.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+            {% if booth.faculty %}
+              <span style="font-size: 0.85rem; color: #1e40af; font-weight: 800; background: #dbeafe; padding: 0.25rem 0.75rem; border-radius: 999px;">
+                {{ booth.faculty.icon }} {{ booth.faculty.name }} ({{ booth.faculty.canteen_name }})
+              </span>
+            {% endif %}
+            <span class="node-code" style="margin-bottom: 0; padding: 0.25rem 0.75rem; font-size: 0.85rem;">
+              Kode Denah: {{ booth.map_code }}
+            </span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+              📍 {{ booth.location }}
+            </span>
+          </div>
+
+          <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 0.75rem;">
+            {{ booth.name }}
+          </h1>
+
+          <p style="color: var(--text-muted); font-size: 1rem; max-width: 750px; line-height: 1.6;">
+            {{ booth.description }}
+          </p>
+        </div>
+
+        <!-- Tombol Aksi Pintas -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 200px;">
+          <a href="{% url 'kantin:randomizer' %}?mode=specific_booth&booth_id={{ booth.id }}" class="btn btn-primary" style="font-size: 0.9rem;">
+            <span>🎲</span> Acak Menu Booth Ini
+          </a>
+          <a href="{% url 'kantin:mapping' %}{% if booth.faculty %}?faculty={{ booth.faculty.short_name }}{% endif %}" class="btn btn-secondary" style="font-size: 0.9rem;">
+            <span>🗺️</span> Cek Posisi di Denah
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================================
+         SEKSI 1: DAFTAR MAKANAN
+         ================================================================== -->
+    <div style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <span style="font-size: 1.5rem;">🍛</span>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark);">
+          Menu Makanan
+        </h2>
+        <span style="background: #e2e8f0; color: var(--text-muted); font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px;">
+          {{ makanan_list.count }} Menu
+        </span>
+      </div>
+
+      <div class="menu-grid">
+        {% for item in makanan_list %}
+          <div class="menu-card">
+            <div class="menu-thumb">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+              {% else %}
+                <span>🍛</span>
+              {% endif %}
+            </div>
+            <div class="menu-details">
+              <span class="menu-tag">Makanan</span>
+              <h3 class="menu-name">{{ item.name }}</h3>
+              {% if item.description %}
+                <p class="menu-desc">{{ item.description }}</p>
+              {% endif %}
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem;">
+                <span class="menu-price">{{ item.formatted_price }}</span>
+                {% if item.is_available %}
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--success); background: #d1fae5; padding: 0.15rem 0.5rem; border-radius: 4px;">
+                    Tersedia
+                  </span>
+                {% else %}
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--danger); background: #fee2e2; padding: 0.15rem 0.5rem; border-radius: 4px;">
+                    Habis
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-style: italic; grid-column: 1 / -1;">
+            Belum ada menu makanan terdaftar di booth ini.
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ==================================================================
+         SEKSI 2: DAFTAR MINUMAN
+         ================================================================== -->
+    <div style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <span style="font-size: 1.5rem;">🥤</span>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark);">
+          Menu Minuman
+        </h2>
+        <span style="background: #e2e8f0; color: var(--text-muted); font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px;">
+          {{ minuman_list.count }} Menu
+        </span>
+      </div>
+
+      <div class="menu-grid">
+        {% for item in minuman_list %}
+          <div class="menu-card">
+            <div class="menu-thumb">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+              {% else %}
+                <span>🥤</span>
+              {% endif %}
+            </div>
+            <div class="menu-details">
+              <span class="menu-tag" style="color: #0284c7;">Minuman</span>
+              <h3 class="menu-name">{{ item.name }}</h3>
+              {% if item.description %}
+                <p class="menu-desc">{{ item.description }}</p>
+              {% endif %}
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem;">
+                <span class="menu-price">{{ item.formatted_price }}</span>
+                {% if item.is_available %}
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--success); background: #d1fae5; padding: 0.15rem 0.5rem; border-radius: 4px;">
+                    Tersedia
+                  </span>
+                {% else %}
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--danger); background: #fee2e2; padding: 0.15rem 0.5rem; border-radius: 4px;">
+                    Habis
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-style: italic; grid-column: 1 / -1;">
+            Belum ada menu minuman terdaftar di booth ini.
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ==================================================================
+         SEKSI 3: SNACK / CAMILAN (JIKA ADA)
+         ================================================================== -->
+    {% if snack_list %}
+      <div style="margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+          <span style="font-size: 1.5rem;">🥨</span>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark);">
+            Snack & Camilan
+          </h2>
+        </div>
+
+        <div class="menu-grid">
+          {% for item in snack_list %}
+            <div class="menu-card">
+              <div class="menu-thumb">
+                <span>🥨</span>
+              </div>
+              <div class="menu-details">
+                <span class="menu-tag" style="color: #d97706;">Snack</span>
+                <h3 class="menu-name">{{ item.name }}</h3>
+                {% if item.description %}
+                  <p class="menu-desc">{{ item.description }}</p>
+                {% endif %}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem;">
+                  <span class="menu-price">{{ item.formatted_price }}</span>
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--success); background: #d1fae5; padding: 0.15rem 0.5rem; border-radius: 4px;">
+                    Tersedia
+                  </span>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

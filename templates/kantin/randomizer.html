@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Makan Apa Hari Ini? | Food Randomizer Claudeholic UI{% endblock %}
+
+{% block content %}
+<section style="padding: 2.5rem 0 4.5rem;">
+  <div class="container">
+    <!-- Header Halaman dengan Slogan Utama -->
+    <div class="slogan-hero">
+      <div class="slogan-badge">
+        <span>✨</span> Food Randomizer by <strong>Claudeholic</strong>
+      </div>
+      <h1 class="slogan-headline">
+        Makan apa <span>hari ini?</span>
+      </h1>
+      <p class="slogan-subtext">
+        Jangan bingung lagi mikirin santap siang di kampus! Biarkan generator pintar <strong>Claudeholic</strong> mengacak pilihan makanan lezat dari 14 Fakultas Universitas Indonesia yang pas di lidah dan ramah di kantong.
+      </p>
+    </div>
+
+    <!-- Kotak Utama Randomizer -->
+    <div class="randomizer-card">
+      <!-- Navigasi 3 Pilihan Mode Randomizer (BARU: Makanan / Minuman / Keduanya) -->
+      <div class="tabs-nav" role="tablist">
+        {# Tab 1: Acak Makanan (default aktif) #}
+        <button type="button"
+                class="tab-btn {% if mode == 'makanan' or not mode %}active{% endif %}"
+                data-mode="makanan">
+          🍛 1. Acak Makanan
+        </button>
+        {# Tab 2: Acak Minuman #}
+        <button type="button"
+                class="tab-btn {% if mode == 'minuman' %}active{% endif %}"
+                data-mode="minuman">
+          🥤 2. Acak Minuman
+        </button>
+        {# Tab 3: Keduanya sekaligus (Paket Kombo) #}
+        <button type="button"
+                class="tab-btn {% if mode == 'combo' %}active{% endif %}"
+                data-mode="combo">
+          🍱 3. Keduanya! (Paket Kombo)
+        </button>
+      </div>
+
+      <!-- Formulir Eksekusi Randomizer -->
+      <form id="randomizerForm" method="GET" action="{% url 'kantin:randomizer' %}">
+        {# Hidden input ini yang menyimpan mode aktif saat form di-submit #}
+        <input type="hidden" name="mode" id="randomizerModeInput" value="{{ mode|default:'makanan' }}">
+
+        <!-- Filter Fakultas UI (Opsional, tampil di semua mode) -->
+        <div class="form-group" id="facultyFilterGroup">
+          <label class="form-label" for="facultySelect">
+            🏛️ Pilih Fakultas Spesifik (Opsional):
+          </label>
+          <select name="faculty_id" id="facultySelect" class="form-select">
+            <option value="">-- Seluruh 14 Fakultas di Universitas Indonesia --</option>
+            {% for f in all_faculties %}
+              <option value="{{ f.id }}" {% if selected_faculty_id|stringformat:"s" == f.id|stringformat:"s" %}selected{% endif %}>
+                {{ f.icon }} {{ f.short_name }} — {{ f.canteen_name }} ({{ f.cluster }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Filter Budget Mahasiswa (Opsional, disembunyikan saat mode combo) -->
+        <div class="form-group" id="budgetFilterGroup" style="{% if mode == 'combo' %}display: none;{% else %}display: block;{% endif %}">
+          <label class="form-label" for="maxPriceInput">
+            💰 Budget Maksimal Mahasiswa (Opsional):
+          </label>
+          <input type="number"
+                 name="max_price"
+                 id="maxPriceInput"
+                 value="{{ max_price }}"
+                 class="form-input"
+                 placeholder="Contoh: 15000 (tanpa titik atau simbol Rp)"
+                 min="1000"
+                 step="1000">
+          <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.35rem; display: block;">
+            💡 <strong>Rekomendasi Claudeholic:</strong> Masukkan angka budget (misal: 15000 atau 20000) agar sistem mengacak menu yang pas dengan dompet Anda.
+          </small>
+        </div>
+
+        <!-- Tombol Eksekusi Pengacakan -->
+        <button type="submit" id="randomizeBtn" class="btn btn-accent btn-block" style="padding: 1.15rem; font-size: 1.1rem; border-radius: var(--radius-md);">
+          <span>🎲</span> Acak Sekarang!
+        </button>
+      </form>
+
+      <!-- Pesan Kesalahan Jika Tidak Ada Data -->
+      {% if error_message %}
+        <div class="alert alert-error" style="margin-top: 1.5rem;">
+          {{ error_message }}
+        </div>
+      {% endif %}
+
+      <!-- ============================================================
+           Kontainer Tampilan Hasil Pengacakan
+           Mendukung 3 jenis result_type: 'menu', 'combo', 'booth'
+           ============================================================ -->
+      <div id="randomizerResultContainer">
+        {% if result %}
+          <div class="result-box">
+
+            {% if result_type == 'combo' %}
+              {# ---- TAMPILAN HASIL MODE KOMBO (Makanan + Minuman) ---- #}
+              <div style="text-align: center; margin-bottom: 1.25rem;">
+                <span class="result-badge" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; font-size: 1rem; padding: 0.4rem 1.2rem;">
+                  🍱 Paket Kombo Terpilih!
+                </span>
+                <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">
+                  Satu makanan + satu minuman, langsung siap santap!
+                </p>
+              </div>
+
+              {# Dua kartu berdampingan: Makanan (kiri) + Minuman (kanan) #}
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+
+                {# --- Kartu Makanan --- #}
+                <div style="background: #fff7ed; border: 2px solid #fed7aa; border-radius: var(--radius-md); padding: 1.25rem;">
+                  <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🍛</div>
+                  <span style="background: #f97316; color: white; font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Makanan
+                  </span>
+                  <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin: 0.6rem 0 0.4rem;">
+                    {{ result.food.name }}
+                  </h4>
+                  <p style="font-size: 1rem; font-weight: 800; color: #f97316; margin-bottom: 0.5rem;">
+                    {{ result.food.formatted_price }}
+                  </p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                    🏪 {{ result.food.booth_name }}
+                  </p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                    🏛️ {{ result.food.faculty_short }} · {{ result.food.canteen_name }}
+                  </p>
+                  <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+                    {{ result.food.description }}
+                  </p>
+                  <a href="{% url 'kantin:booth_detail' result.food.booth_id %}" class="btn btn-secondary btn-block" style="margin-top: 0.75rem; font-size: 0.82rem;">
+                    Lihat Booth →
+                  </a>
+                </div>
+
+                {# --- Kartu Minuman --- #}
+                <div style="background: #eff6ff; border: 2px solid #bfdbfe; border-radius: var(--radius-md); padding: 1.25rem;">
+                  <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🥤</div>
+                  <span style="background: #3b82f6; color: white; font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Minuman
+                  </span>
+                  <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin: 0.6rem 0 0.4rem;">
+                    {{ result.drink.name }}
+                  </h4>
+                  <p style="font-size: 1rem; font-weight: 800; color: #3b82f6; margin-bottom: 0.5rem;">
+                    {{ result.drink.formatted_price }}
+                  </p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                    🏪 {{ result.drink.booth_name }}
+                  </p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                    🏛️ {{ result.drink.faculty_short }} · {{ result.drink.canteen_name }}
+                  </p>
+                  <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+                    {{ result.drink.description }}
+                  </p>
+                  <a href="{% url 'kantin:booth_detail' result.drink.booth_id %}" class="btn btn-secondary btn-block" style="margin-top: 0.75rem; font-size: 0.82rem;">
+                    Lihat Booth →
+                  </a>
+                </div>
+              </div>
+
+              {# Total Harga Paket Kombo #}
+              <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #fbbf24; border-radius: var(--radius-md); padding: 1.1rem 1.5rem; text-align: center; margin-bottom: 1rem;">
+                <p style="font-size: 0.85rem; color: #92400e; font-weight: 600; margin-bottom: 0.25rem;">💰 Total Harga Paket Kombo</p>
+                <p style="font-size: 1.75rem; font-weight: 900; color: #b45309;">{{ result.formatted_total_price }}</p>
+                <p style="font-size: 0.78rem; color: #92400e; margin-top: 0.25rem;">
+                  {{ result.food.formatted_price }} + {{ result.drink.formatted_price }}
+                </p>
+              </div>
+
+              {# Tombol aksi bawah kombo #}
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <a href="{% url 'kantin:randomizer' %}?mode=combo&faculty_id={{ selected_faculty_id }}" class="btn btn-accent">
+                  🎲 Acak Kombo Lagi!
+                </a>
+              </div>
+
+            {% elif result_type == 'menu' %}
+              {# ---- TAMPILAN HASIL MODE MENU TUNGGAL (Makanan / Minuman) ---- #}
+              <span class="result-badge">🎉 Menu Terpilih</span>
+              <h3 class="result-title">{{ result.name }}</h3>
+              <div class="result-meta">
+                <span class="result-price">{{ result.formatted_price }}</span>
+                <span style="background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 800;">
+                  🏛️ {{ result.faculty_short }} ({{ result.canteen_name }})
+                </span>
+                <span class="result-booth">🏪 Stan: <strong>{{ result.booth_name }}</strong></span>
+                <span style="background:#f1f5f9; color:var(--text-muted); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.8rem; font-weight:700;">
+                  {{ result.category }}
+                </span>
+              </div>
+              <p class="result-desc">{{ result.description }}</p>
+              <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <a href="{% url 'kantin:booth_detail' result.booth_id %}" class="btn btn-primary">
+                  Kunjungi Booth {{ result.booth_name }} →
+                </a>
+                <a href="{% url 'kantin:randomizer' %}?mode={{ mode }}&faculty_id={{ selected_faculty_id }}&max_price={{ max_price }}" class="btn btn-secondary">
+                  🎲 Acak Ulang
+                </a>
+              </div>
+
+            {% elif result_type == 'booth' %}
+              {# ---- TAMPILAN HASIL MODE BOOTH ---- #}
+              <span class="result-badge">🎉 Booth Terpilih</span>
+              <h3 class="result-title">{{ result.name }}</h3>
+              <div class="result-meta">
+                <span style="background: #dbeafe; color: #1e40af; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem;">
+                  🏛️ {{ result.faculty_short }} — {{ result.canteen_name }}
+                </span>
+                <span class="result-booth">📍 Lokasi: {{ result.location }}</span>
+                <span style="font-weight:750; color:var(--primary);">• Total: {{ result.total_menu }} Menu</span>
+              </div>
+              <p class="result-desc">{{ result.description }}</p>
+              <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <a href="{% url 'kantin:booth_detail' result.id %}" class="btn btn-primary">
+                  Lihat Seluruh Menu Booth Ini →
+                </a>
+                <a href="{% url 'kantin:randomizer' %}?mode=booth" class="btn btn-secondary">
+                  🎲 Acak Ulang
+                </a>
+              </div>
+            {% endif %}
+
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Catatan Logika Pemrograman DDP1 -->
+    <div style="max-width: 780px; margin: 0 auto; background: white; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-xs);">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span class="team-pill team-pill-accent">Claudeholic</span>
+        <h4 style="font-weight: 800; color: var(--primary); font-size: 1rem;">
+          💡 Catatan Logika Algoritma Randomizer:
+        </h4>
+      </div>
+      <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+        Fitur <em>"Makan apa hari ini?"</em> dibangun oleh <strong>Tim Claudeholic</strong> menggunakan modul bawaan Python <code>random.choice()</code> yang mengambil data langsung dari database SQLite secara acak dengan distribusi probabilitas seragam.
+        Mode <strong>Paket Kombo</strong> mengacak 1 makanan + 1 minuman sekaligus, dengan logika smart: 60% peluang memilih minuman dari stan yang sama dengan makanan terpilih agar lebih praktis satu tempat.
+        Dilengkapi query filter <code>price__lte</code> untuk menyesuaikan menu dengan batas budget mahasiswa.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

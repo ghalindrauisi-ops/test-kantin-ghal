@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pemetaan Denah Kantin 14 Fakultas | Kantin UI{% endblock %}
+
+{% block content %}
+<section style="padding: 2.5rem 0 4rem;">
+  <div class="container">
+    <!-- Header Halaman -->
+    <div style="margin-bottom: 2rem;">
+      <a href="{% url 'kantin:home' %}" style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); font-weight: 600; margin-bottom: 0.75rem; font-size: 0.9rem;">
+        ← Kembali ke Beranda
+      </a>
+      <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--primary-dark);">
+        🗺️ Pemetaan Denah Kantin 14 Fakultas UI
+      </h1>
+      <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.25rem;">
+        Pilih salah satu fakultas di bawah ini untuk melihat denah tata letak stan, posisi lorong, dan daftar menunya secara interaktif.
+      </p>
+    </div>
+
+    <!-- Tab Pilihan 14 Fakultas UI -->
+    <div style="margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem;">
+      <div style="display: flex; gap: 0.5rem; min-width: max-content;">
+        {% for fac in faculties %}
+          <a href="{% url 'kantin:mapping' %}?faculty={{ fac.short_name }}" 
+             class="btn {% if current_faculty.id == fac.id %}btn-primary{% else %}btn-secondary{% endif %}"
+             style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 999px;">
+            <span>{{ fac.icon }}</span>
+            <span>{{ fac.short_name }}</span>
+            <span style="font-size: 0.75rem; opacity: 0.8;">({{ fac.canteen_name }})</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Informasi Fakultas Terpilih -->
+    {% if current_faculty %}
+      <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span style="font-size: 1.5rem;">{{ current_faculty.icon }}</span>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--primary-dark);">
+              {{ current_faculty.canteen_name }}
+            </h2>
+            <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px;">
+              {{ current_faculty.cluster }}
+            </span>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted); max-width: 750px;">
+            {{ current_faculty.description }} | <strong>Lokasi:</strong> {{ current_faculty.location_desc }}
+          </p>
+        </div>
+        <div>
+          <a href="{% url 'kantin:menu_list' %}?faculty={{ current_faculty.short_name }}" class="btn btn-outline" style="font-size: 0.85rem;">
+            Lihat Semua Menu {{ current_faculty.short_name }} →
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Denah & Panel Informasi Interaktif -->
+    <div class="map-layout">
+      <!-- Kolom Kiri: Visual Denah Kantin Fakultas -->
+      <div class="map-container">
+        <div class="floorplan-header">
+          <div>
+            <h3 style="font-weight: 800; font-size: 1.15rem; color: var(--primary-dark);">
+              Denah Lantai: {{ current_faculty.canteen_name }}
+            </h3>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+              {{ current_faculty.name }} — Kampus Universitas Indonesia
+            </span>
+          </div>
+          <span class="floorplan-badge">Denah Interaktif</span>
+        </div>
+
+        <div class="floorplan-wrapper">
+          <!-- Penanda Area Masuk -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 6px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">
+            <span>🚪 Pintu Masuk / Selasar {{ current_faculty.short_name }}</span>
+            <span>Jalur Pembelian ➔</span>
+          </div>
+
+          <!-- Grid Titik/Stan Booth -->
+          <div class="floorplan-grid">
+            {% for booth in booths %}
+              <div class="booth-node" 
+                   data-id="{{ booth.id }}"
+                   data-name="{{ booth.name }}"
+                   data-location="{{ booth.location }}"
+                   data-description="{{ booth.description }}"
+                   data-total-menu="{{ booth.menus.count }}"
+                   data-detail-url="{% url 'kantin:booth_detail' booth.id %}">
+                <span class="node-code">{{ booth.map_code }}</span>
+                <div class="node-name" title="{{ booth.name }}">{{ booth.name }}</div>
+                <div class="node-menus">🍽️ {{ booth.menus.count }} Menu</div>
+              </div>
+            {% empty %}
+              <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted);">
+                Belum ada data booth untuk fakultas ini. Tambahkan melalui panel admin!
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Area Makan Tengah -->
+          <div class="dining-hall">
+            <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🪑</div>
+            <div>AREA MAKAN MAHASISWA & DOSEN ({{ current_faculty.short_name }})</div>
+            <div style="font-size: 0.75rem; font-weight: normal; margin-top: 0.2rem;">
+              Meja, Kursi, & Ruang Diskusi Terbuka
+            </div>
+          </div>
+        </div>
+
+        <!-- Petunjuk Penggunaan -->
+        <div style="margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--text-muted); background: var(--bg-subtle); padding: 0.75rem 1rem; border-radius: 8px;">
+          <span>💡</span>
+          <span><strong>Tips:</strong> Klik kotak stan di atas untuk memuat informasi lengkap dan menunya di panel kanan.</span>
+        </div>
+      </div>
+
+      <!-- Kolom Kanan: Panel Info Booth Terpilih -->
+      <div>
+        <div class="booth-info-panel" id="boothInfoPanel">
+          <div class="info-panel-empty">
+            <div class="info-icon">📍</div>
+            <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+              Pilih Stan pada Denah
+            </h4>
+            <p style="font-size: 0.85rem; line-height: 1.5;">
+              Klik salah satu kotak stan di denah kantin {{ current_faculty.short_name }} sebelah kiri untuk melihat informasi detail dan menunya.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daftar List Cepat Seluruh Booth di Fakultas Ini -->
+    <div style="margin-top: 3.5rem;">
+      <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 1.25rem;">
+        Daftar Stan di {{ current_faculty.canteen_name }}
+      </h3>
+
+      <div class="booth-grid">
+        {% for booth in booths %}
+          <div class="booth-card">
+            <div class="booth-card-body">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <span class="node-code" style="margin-bottom: 0;">{{ booth.map_code }}</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">📍 {{ booth.location }}</span>
+              </div>
+              <h4 class="booth-card-title" style="font-size: 1.15rem;">{{ booth.name }}</h4>
+              <p class="booth-card-desc" style="font-size: 0.85rem;">{{ booth.description|truncatewords:15 }}</p>
+              <div class="booth-card-footer">
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">
+                  🍽️ {{ booth.menus.count }} Menu
+                </span>
+                <a href="{% url 'kantin:booth_detail' booth.id %}" class="btn btn-outline" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;">
+                  Lihat Menu
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tentang Kami | Kantin 14 Fakultas Universitas Indonesia{% endblock %}
+
+{% block content %}
+<section style="padding: 2.5rem 0 4rem;">
+  <div class="container">
+    <!-- Header Halaman -->
+    <div class="about-hero">
+      <span class="hero-badge">📖 Profil & Filosofi Kuliner UI</span>
+      <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--primary-dark); margin-top: 0.5rem;">
+        Tentang Kantin 14 Fakultas UI
+      </h1>
+      <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 750px; margin: 0.75rem auto 0;">
+        Portal digital terpadu untuk menjelajahi kekayaan kuliner, kisah historis kantin legendaris, transparansi harga, dan pemetaan stan di seluruh 14 Fakultas Universitas Indonesia.
+      </p>
+    </div>
+
+    <!-- 3 Kartu Pokok Informasi Sesuai Spesifikasi Proyek -->
+    <div class="info-cards-grid">
+      <!-- 1. Latar Belakang Pembuatan Website -->
+      <div class="info-box">
+        <div class="info-box-icon">💡</div>
+        <h3>1. Latar Belakang & Tim Claudeholic</h3>
+        <p>
+          Universitas Indonesia memiliki area kampus yang sangat luas dengan <strong>14 fakultas</strong> yang terbagi ke dalam 3 rumpun ilmu (Saintek, Soshum, dan Ilmu Kesehatan). 
+          Setiap fakultas memiliki kantin dengan ciri khas kuliner, harga, dan nuansa sosialnya masing-masing.
+        </p>
+        <p style="margin-top: 0.75rem;">
+          Namun, mahasiswa sering kali hanya makan di kantin fakultasnya sendiri dan tidak mengetahui menu lezat apa saja yang ada di fakultas lain. 
+          Website ini dibangun oleh <strong>Tim Claudeholic</strong> (diketuai oleh Ghalindra — Sistem Informasi UI) sebagai proyek <strong>Dasar-Dasar Pemrograman 1 (DDP1)</strong> untuk menghubungkan seluruh kantin 14 fakultas UI dalam satu platform digital terpadu.
+        </p>
+      </div>
+
+      <!-- 2. Tujuan Website -->
+      <div class="info-box">
+        <div class="info-box-icon">🎯</div>
+        <h3>2. Tujuan Pembuatan</h3>
+        <p>
+          Platform ini dirancang untuk mencapai beberapa tujuan strategis:
+        </p>
+        <ul style="margin-top: 0.5rem; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+          <li>Mendokumentasikan seluruh stan dan menu makanan di 14 Fakultas Universitas Indonesia.</li>
+          <li>Menyediakan denah interaktif agar mahasiswa dan pengunjung kampus dapat menemukan lokasi kantin dengan mudah.</li>
+          <li>Menyediakan filter pencarian lintas fakultas dan transparansi harga ramah kantong mahasiswa.</li>
+          <li>Menyediakan fitur cerdas <em>Food Randomizer</em> berbasis Python untuk mengatasi kebingungan memilih santap siang.</li>
+        </ul>
+      </div>
+
+      <!-- 3. Penjelasan Mengenai Kantin 14 Fakultas UI -->
+      <div class="info-box">
+        <div class="info-box-icon">🏛️</div>
+        <h3>3. Ragam Kantin Ikonik UI</h3>
+        <p>
+          Kantin di UI bukan sekadar tempat makan, melainkan ruang berbaur dan bertukar gagasan dengan nama-nama unik:
+        </p>
+        <ul style="margin-top: 0.5rem; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+          <li><strong>DALLAS (FMIPA):</strong> <em>"Di Bawah Lindungan Allah SWT"</em> karena posisinya di bawah musala FMIPA.</li>
+          <li><strong>BALSEM & TAKOR (FISIP):</strong> <em>"Balik Semak"</em> yang kini direnovasi menjadi Taman Korea.</li>
+          <li><strong>KANSAS (FIB):</strong> <em>"Kantin Sastra"</em> dengan arsitektur kerucut dan fasilitas piano terbuka.</li>
+          <li><strong>Kantin Fasilkom:</strong> Pusat kumpul anak koding di Gedung Baru dengan kopi dan menu hemat.</li>
+          <li><strong>Kantin FT, FEB, FH, & RIK:</strong> Pusat energi para calon insinyur, ekonom, penegak hukum, dan tenaga medis.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Rincian 14 Fakultas Berdasarkan 3 Rumpun Ilmu UI -->
+    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm); margin-bottom: 3rem;">
+      <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 1.5rem;">
+        🏛️ Daftar Lengkap 14 Fakultas Universitas Indonesia
+      </h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <!-- Rumpun 1: Saintek -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 1.5rem;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: #0369a1; background: #e0f2fe; padding: 0.2rem 0.6rem; border-radius: 999px; display: inline-block; margin-bottom: 0.75rem;">
+            RUMPUN SAINS & TEKNOLOGI (SAINTEK)
+          </div>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem;">
+            <li>💻 <strong>Fasilkom:</strong> Fakultas Ilmu Komputer</li>
+            <li>⚙️ <strong>FT:</strong> Fakultas Teknik</li>
+            <li>🔬 <strong>FMIPA:</strong> Fakultas Matematika dan Ilmu Pengetahuan Alam</li>
+          </ul>
+        </div>
+
+        <!-- Rumpun 2: Soshum -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 1.5rem;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; background: #fef3c7; padding: 0.2rem 0.6rem; border-radius: 999px; display: inline-block; margin-bottom: 0.75rem;">
+            RUMPUN SOSIAL & HUMANIORA (SOSHUM)
+          </div>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem;">
+            <li>🌍 <strong>FISIP:</strong> Fakultas Ilmu Sosial dan Ilmu Politik</li>
+            <li>🎭 <strong>FIB:</strong> Fakultas Ilmu Pengetahuan Budaya</li>
+            <li>📈 <strong>FEB:</strong> Fakultas Ekonomi dan Bisnis</li>
+            <li>⚖️ <strong>FH:</strong> Fakultas Hukum</li>
+            <li>🧠 <strong>FPsi:</strong> Fakultas Psikologi</li>
+            <li>📋 <strong>FIA:</strong> Fakultas Ilmu Administrasi</li>
+          </ul>
+        </div>
+
+        <!-- Rumpun 3: IKES -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 1.5rem;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: #047857; background: #d1fae5; padding: 0.2rem 0.6rem; border-radius: 999px; display: inline-block; margin-bottom: 0.75rem;">
+            RUMPUN ILMU KESEHATAN (IKES)
+          </div>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem;">
+            <li>🩺 <strong>FK:</strong> Fakultas Kedokteran</li>
+            <li>🦷 <strong>FKG:</strong> Fakultas Kedokteran Gigi</li>
+            <li>🥗 <strong>FKM:</strong> Fakultas Kesehatan Masyarakat</li>
+            <li>🩹 <strong>FIK:</strong> Fakultas Ilmu Keperawatan</li>
+            <li>💊 <strong>FF:</strong> Fakultas Farmasi</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seksi Teknologi & Arsitektur -->
+    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 1rem;">
+        ⚙️ Arsitektur & Teknologi Pemrograman
+      </h3>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+        Website ini dibangun mengikuti prinsip <strong>Model-View-Template (MVT)</strong> Django dengan skema relasi hierarkis 3 tingkat:
+        <code>Faculty (14 Fakultas) ➔ Booth (Stan Kantin) ➔ Menu (Makanan/Minuman)</code>.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+        <div style="background: var(--bg-subtle); padding: 1.25rem; border-radius: var(--radius-md);">
+          <div style="font-weight: 800; color: var(--primary); margin-bottom: 0.35rem;">🐍 Backend</div>
+          <div style="font-size: 0.9rem; color: var(--text-muted);">Python & Django Framework dengan Django ORM multi-relasi.</div>
+        </div>
+        <div style="background: var(--bg-subtle); padding: 1.25rem; border-radius: var(--radius-md);">
+          <div style="font-weight: 800; color: var(--primary); margin-bottom: 0.35rem;">🗄️ Database</div>
+          <div style="font-size: 0.9rem; color: var(--text-muted);">SQLite dengan relasi bertingkat Faculty, Booth, dan Menu.</div>
+        </div>
+        <div style="background: var(--bg-subtle); padding: 1.25rem; border-radius: var(--radius-md);">
+          <div style="font-weight: 800; color: var(--primary); margin-bottom: 0.35rem;">🎨 Frontend</div>
+          <div style="font-size: 0.9rem; color: var(--text-muted);">HTML5 semantik, CSS3 modern responsif, dan Vanilla JavaScript.</div>
+        </div>
+        <div style="background: var(--bg-subtle); padding: 1.25rem; border-radius: var(--radius-md);">
+          <div style="font-weight: 800; color: var(--primary); margin-bottom: 0.35rem;">🛡️ Admin Panel</div>
+          <div style="font-size: 0.9rem; color: var(--text-muted);">Django Admin terintegrasi untuk CRUD fakultas, stan, dan menu.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
